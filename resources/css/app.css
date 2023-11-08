@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Fraunces:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html{
+    font-family: 'DM Sans', sans-serif;
+}
+
+body{
+    height: 100%;
+    min-height: 100vh;
+}
+
+#app{
+    width: 100%;
+    height: 100%;
+}
+
+@layer base{
+    h1{
+        @apply font-Fraunces text-5xl font-semibold md:text-6xl
+    }
+    .wrapper{
+        @apply px-4 md:px-8 lg:px-16 xl:px-32
+    }
+    .font-head{
+        @apply font-Fraunces
+    }
+    .font-body{
+        @apply font-DMSans
+    }
+}
+
+@layer components{
+    .btn{
+        @apply rounded-full flex shrink-0 justify-center items-center px-5 py-3 text-sm
+    }
+}
