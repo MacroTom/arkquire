@@ -17,3 +17,11 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Home');
 });
+
+Route::get('/businesses', function () {
+    return Inertia::render('Businesses');
+});
+
+Route::get('/login', function () {
+    return Inertia::render('Login');
+});
