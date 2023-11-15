@@ -25,3 +25,5 @@ Route::get('/businesses', function () {
 Route::get('/login', function () {
     return Inertia::render('Login');
 });
+
+Route::prefix('admin')->group(__DIR__ . '/admin.php');

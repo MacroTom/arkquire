@@ -1,5 +1,17 @@
 <script setup>
+import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import Dialog from 'primevue/dialog';
+import Button from 'primevue/button';
+import { useToast } from 'primevue/usetoast';
+import { dialogStyles } from '../PassThroughs/Dialog.js';
+
+const visible = ref(false);
+const toast = useToast();
+
+const showMessage = () => {
+    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', life: 3000 });
+}
 </script>
 
 <template>
@@ -25,8 +37,11 @@ import { Link } from '@inertiajs/vue3';
         </ul>
 
         <div class="flex items-center gap-4">
-            <button class="btn text-primary-500 font-semibold">Login</button>
-            <button class="btn bg-primary-500 text-primary-200 font-semibold">Register</button>
+            <button @click="visible = true" class="btn text-primary-500 font-semibold">Login</button>
+            <button @click="showMessage" class="btn bg-primary-500 text-primary-200 font-semibold">Register</button>
         </div>
+
+        <Dialog :pt="dialogStyles" v-model:visible="visible" modal header="Sign in" :style="{ width: '30rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        </Dialog>
     </nav>
 </template>
