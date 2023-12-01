@@ -8,8 +8,14 @@ const links = [
     {
         title: 'Dashboard',
         href: '#',
-        icon: 'pi-th-large',
+        icon: 'pi-home text-lg',
         page: '/dashboard'
+    },
+    {
+        title: 'Businesses',
+        href: 'businesses',
+        icon: 'pi-th-large',
+        page: '/businesses'
     },
     {
         title: 'Users',
@@ -22,7 +28,7 @@ const links = [
 
 <template>
     <!-- Large screens -->
-    <aside :class="open ? 'w-[18rem]' : 'w-[6rem]'" class="h-full px-3 py-6 hidden lg:flex flex-col justify-between trans bg-primary-100 relative">
+    <aside :class="open ? 'w-[18rem]' : 'w-[6rem]'" class="h-full px-3 py-6 hidden lg:flex flex-col justify-between trans bg-primary-100 relative top-0 z-[31]">
         <section class="w-full flex flex-col items-center">
             <Link href="#" class="w-full max-w-[4.5rem] mb-12">
                 <img class="w-full object-contain pointer-events-none" src="/images/logo.svg" alt="logo">

@@ -9,6 +9,9 @@ import Info from '../Components/Info.vue';
 import Services from '../Components/Services.vue';
 import Testimonies from '../Components/Testimonies.vue';
 import Footer from '../Components/Footer.vue';
+
+import Foreground from '../Layouts/Services.vue';
+defineOptions({ layout: Foreground });
 </script>
 
 <template>

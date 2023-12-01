@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BusinessController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,8 +24,21 @@ Route::get('/businesses', function () {
     return Inertia::render('Businesses');
 });
 
-Route::get('/login', function () {
-    return Inertia::render('Login');
+Route::get('/auctions', function () {
+    return Inertia::render('Auctions');
+});
+
+Route::post('/sendotp', [AuthController::class, 'emailOTP']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/business/{id}', [BusinessController::class, 'business']);
+
+Route::middleware('auth')->group(function(){
+    Route::get('/sellbusiness', [BusinessController::class, 'index']);
+    Route::post('/sellbusiness', [BusinessController::class, 'store']);
+
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 Route::prefix('admin')->group(__DIR__ . '/admin.php');

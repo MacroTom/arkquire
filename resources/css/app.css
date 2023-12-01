@@ -18,6 +18,7 @@ html{
 body{
     height: 100%;
     min-height: 100vh;
+    position: relative;
 }
 
 #app{
@@ -47,5 +48,8 @@ body{
 @layer components{
     .btn{
         @apply rounded-full flex shrink-0 justify-center items-center px-5 py-3 text-sm
+    }
+    .primary{
+        @apply font-semibold bg-primary-500 text-white disabled:cursor-not-allowed disabled:bg-primary-400 disabled:text-primary-200 hover:bg-primary-500/80 transition-all duration-75 ease-in active:scale-95
     }
 }

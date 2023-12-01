@@ -1,5 +1,6 @@
 <script setup>
 import InputText from 'primevue/inputtext';
+import Avatar from 'primevue/avatar';
 </script>
 
 <template>
@@ -12,14 +13,13 @@ import InputText from 'primevue/inputtext';
 
         <!-- Right -->
         <div class="flex items-center gap-4">
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg border">
+            <button v-badge class="w-10 h-10 flex items-center justify-center rounded-lg border p-overlay-badge">
                 <i class="bx bx-bell bx-tada text-xl"></i>
             </button>
             <div class="h-10 border-l"></div>
             <div class="h-10 flex items-center gap-3">
-                <div class="w-9">
-                    <img class="w-full object-contain object-center rounded-full" src="https://lh3.googleusercontent.com/a/AAcHTtfIvf1qRzOu-ASk1cacucU75-lt4S1V6MMD2Iw-DvlKlgY=s96-c" alt="avatar">
-                </div>
+                <Avatar image="https://lh3.googleusercontent.com/a/AAcHTtfIvf1qRzOu-ASk1cacucU75-lt4S1V6MMD2Iw-DvlKlgY=s96-c"
+                  shape="circle" />
                 <div class="flex flex-col items-start">
                     <p class="text-neutral-800 text-sm font-semibold">Esieba Okeoghene</p>
                     <small class="text-neutral-800 text-xs">okeesieba@gmail.com</small>

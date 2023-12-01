@@ -35,7 +35,7 @@ const breakpoints = {
                     These are the list of businesses on auction
                 </small>
             </div>
-            <Link href="#" class="inline-flex items-center gap-2 text-sm md:text-base text-primary-500 hover:text-primary-600">
+            <Link href="/auctions" class="inline-flex items-center gap-2 text-sm md:text-base text-primary-500 hover:text-primary-600">
                 <span class="text-sm">View all</span>
                 <span class="relative transition-all duration-300 ease-in-out group-hover:translate-x-3">→</span>
             </Link>
