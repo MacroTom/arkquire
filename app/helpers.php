@@ -34,3 +34,16 @@ if(!function_exists('addlog')){
         ])->info($log);
     }
 }
+
+if(!function_exists('getAssets')){
+    function getAssets(){
+        $public_path = (config('app.env') === 'local' || config('app.env') === 'testing')  ? 'public' : 'public_html';
+        if (file_get_contents(base_path($public_path)."/build/manifest.json")){
+            $json = json_decode(file_get_contents(base_path($public_path)."/build/manifest.json"),true);
+            return [
+                "css" => $json['resources/js/app.js']['css'][0],
+                "js" => $json['resources/js/app.js']['file']
+            ];
+        }
+    }
+}
