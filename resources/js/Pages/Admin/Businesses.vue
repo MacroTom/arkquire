@@ -10,7 +10,7 @@ defineOptions({
 
 <template>
     <Head>
-        <title>Dashboard</title>
+        <title>Businesses</title>
     </Head>
     <h1 class="text-neutral-800">Hello</h1>
 </template>

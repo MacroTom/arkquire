@@ -10,7 +10,9 @@ defineOptions({
 
 <template>
     <Head>
-        <title>Dashboard</title>
+        <title>Users</title>
     </Head>
-    <h1 class="text-neutral-800">Hello</h1>
+    <section class="w-full">
+
+    </section>
 </template>

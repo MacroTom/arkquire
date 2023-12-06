@@ -52,4 +52,7 @@ body{
     .primary{
         @apply font-semibold bg-primary-500 text-white disabled:cursor-not-allowed disabled:bg-primary-400 disabled:text-primary-200 hover:bg-primary-500/80 transition-all duration-75 ease-in active:scale-95
     }
+    .stroke{
+        @apply py-2.5 font-medium border border-primary-500 text-primary-400 disabled:cursor-not-allowed disabled:bg-neutral-600 disabled:text-neutral-500 hover:bg-primary-500/80 hover:text-white transition-all duration-75 ease-in active:scale-95
+    }
 }
