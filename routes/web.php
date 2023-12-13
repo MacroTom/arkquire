@@ -18,7 +18,7 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Home');
-});
+})->name('home');
 
 Route::get('/businesses', function () {
     return Inertia::render('Businesses');
@@ -35,8 +35,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/business/{id}', [BusinessController::class, 'business']);
 
 Route::middleware('auth')->group(function(){
-    Route::get('/sellbusiness', [BusinessController::class, 'index']);
-    Route::post('/sellbusiness', [BusinessController::class, 'store']);
+    Route::get('/postbusiness', [BusinessController::class, 'index']);
+    Route::post('/postbusiness', [BusinessController::class, 'store']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

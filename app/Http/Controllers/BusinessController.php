@@ -14,7 +14,7 @@ class BusinessController extends Controller
     {
         return Inertia::render('Post', [
             'categories' => Category::all(),
-            'transaction_types' => TransactionTypes::toArray()
+            'transaction_types' => TransactionTypes::toObject()
         ]);
     }
 
@@ -36,9 +36,13 @@ class BusinessController extends Controller
             'category_id' => 'required',
             'description' => 'required',
             'transaction_type' => 'required',
-            'state' => 'nullable',
-            'lga' => 'nullable',
+            'address' => 'nullable',
             'price' => 'required',
+            'profit' => 'required',
+            'margin' => 'required',
+            'age' => 'required',
+            'photos' => 'required',
+            'properties' => 'nullable'
         ]);
 
         Business::create($request->only(
@@ -50,9 +54,11 @@ class BusinessController extends Controller
                 'category_id',
                 'description',
                 'transaction_type',
-                'state',
-                'lga',
+                'address',
                 'price',
+                'profit',
+                'margin',
+                'age',
             ]) + ['listing_id' => generateUID()]
         );
 

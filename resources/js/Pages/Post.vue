@@ -1,0 +1,338 @@
+<script setup>
+import { onMounted, defineOptions, defineProps, ref } from 'vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import Navbar from '../Components/Navbar.vue';
+import Footer from '../Components/Footer.vue';
+import Timeliner from '../Components/Timeliner.vue';
+import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
+import Dropdown from 'primevue/dropdown';
+import Textarea from 'primevue/textarea';
+import SelectButton from 'primevue/selectbutton';
+import draggable from 'vuedraggable';
+import { useToast } from 'primevue/usetoast';
+
+import Services from '../Layouts/Services.vue';
+defineOptions({ layout: Services });
+
+const toast = useToast();
+
+const props = defineProps({
+    errors: Object,
+    transaction_types: Object,
+    categories: Object
+});
+
+const timelines = ref(
+    [
+        { label: '01', description: 'Business information' },
+        { label: '02', description: 'Tell us more about your business' },
+        { label: '03', description: 'Financial information' },
+        // { description: 'Done' },
+    ]
+);
+
+const currentTimeline = ref(0);
+
+const fields = [
+    [
+        'business_name', 'business_type', 'category_id', 'age', 'business_number'
+    ],
+    [
+        'description', 'address', 'property_type', 'photos'
+    ],
+    [
+        'transaction_type', 'price', 'profit', 'margin'
+    ]
+];
+
+const combineAndConvertToObj = () => {
+    let combinedArray = [];
+    combinedArray = fields.flatMap(subArray => combinedArray.concat(subArray));
+
+    // Use reduce to transform the combined array into an object with keys and null values
+    const resultObject = combinedArray.reduce((acc, item) => {
+        acc[item] = null;
+        return acc;
+    }, {});
+
+    return resultObject;
+}
+
+const form = useForm({
+    ...combineAndConvertToObj(),
+    photos: [
+    ],
+})
+
+const deleteFile = (pos) =>{
+    (pos < form.value.photos.length && pos > -1) && form.value.photos.splice(pos,1);
+}
+
+const removeFileExtension = (filename) => {
+    const lastDotIndex = filename.lastIndexOf('.');
+
+    if (lastDotIndex === -1) {
+        return filename; // No extension found
+    } else {
+        return filename.substring(0, lastDotIndex);
+    }
+}
+
+const createURL = (file) => {
+    return URL.createObjectURL(file);
+}
+
+const onFileChange = (e) => {
+    const files = e.target.files;
+    let key;
+    for(const file of files){
+        key = removeFileExtension(file.name);
+        if((file.type === 'image/png' || file.type === 'image/jpeg') && file.size < 3145728 && form.photos.length <= 12){
+            form.photos.push(file);
+        }
+    }
+}
+
+const submit = () => {
+    form.post('/postbusiness', {
+        preserveScroll: true,
+        onSuccess: (res) => {
+            console.log(res);
+            toast.add(
+                { severity: 'success', summary: 'Success', detail: res.props.flash.message, life: 5000 }
+            );
+            form.reset();
+        },
+        onError: (err) => {
+            err?.message ?
+            toast.add(
+                { severity: 'error', summary: 'Error', detail: err?.message, life: 5000 }
+            ) :
+            toast.add(
+                { severity: 'error', summary: 'Error', detail: 'Please complete the form!', life: 5000 }
+            );
+        }
+    })
+}
+
+const checkForRequiredFields = (timeline) => {
+    let errors = 0;
+    for (const field of fields[timeline]) {
+        if(!form[field]){
+            !(field in form.errors) && form.setError(field, 'Required field');
+            errors++;
+        }
+        else{
+            if(typeof form[field] === 'object'){
+                if(form[field]?.length > 0){
+                    field in form.errors && form.clearErrors(field);
+                }
+                else{
+                    !(field in form.errors) && form.setError(field, 'Required field');
+                    errors++;
+                }
+            }
+            else{
+                field in form.errors && form.clearErrors(field);
+            }
+        }
+    }
+    return errors;
+}
+
+const validate = () => {
+    if(!checkForRequiredFields(currentTimeline.value)){
+        switch (currentTimeline.value) {
+            case 0:
+            case 1:
+                currentTimeline.value++;
+            break;
+            case 2:
+                submit();
+            break;
+        }
+    }
+}
+
+// console.log([] ? 'true' : 'false');
+</script>
+
+<template>
+    <Head>
+        <title>Post Business</title>
+    </Head>
+    <section class="w-full bg-[#F7FFFC] font-body">
+        <div class="w-full md:min-h-[28rem] pb-4 bg-primary-100">
+            <Navbar/>
+            <div class="w-full mt-8 space-y-4">
+                <h2 class="text-3xl font-semibold text-center md:text-4xl lg:text-5xl font-head">
+                    Put business on sale <br/><span class="text-primary-400">with Arkquire</span>
+                </h2>
+                <p class="text-sm text-center md:text-lg">We will help you cash-in on your business</p>
+                <!-- <pre class="text-xs">
+                    {{ form }}
+                </pre> -->
+            </div>
+        </div>
+        <div class="flex justify-center w-full mb-8">
+            <div class="flex justify-center w-full md:relative md:-top-28">
+                <form @submit.prevent="submit" class="p-4 md:p-8 w-full min-h-[28rem] max-w-xl bg-white rounded-lg shrink-0 border-b relative">
+                    <img src="/images/pattern_leaf.svg" class="w-[20rem] hidden lg:block h-auto rotate-[220deg] opacity-50 absolute -top-48 -left-56" alt="image">
+                    <img src="/images/pattern_naira.svg" class="w-[15rem] hidden lg:block h-auto absolute opacity-50 -right-60 -top-48" alt="image">
+                    <header class="w-full mb-4">
+                        <p class="text-lg font-semibold text-neutral-800">Create your business</p>
+                        <small class="block mb-2 text-neutral-700">Kindly provide more information about your business</small>
+                        <Timeliner :timelines="timelines" :current="currentTimeline" orientation="horizontal"/>
+                        <p class="mt-8 text-sm text-neutral-500">
+                            {{ timelines[currentTimeline]?.description }}
+                        </p>
+                    </header>
+                    <section v-show="currentTimeline === 0">
+                        <div class="w-full mb-2">
+                            <label class="text-xs">Business name</label>
+                            <InputText @input="'business_name' in form.errors && form.clearErrors('business_name')" :class="(props?.errors?.business_name || form.errors?.business_name) && 'p-invalid'" class="w-full" v-model="form.business_name" size="small"/>
+                            <small v-if="props?.errors?.business_name || form.errors?.business_name" class="text-xs text-red-400">
+                                {{ props?.errors?.business_name ?? form.errors?.business_name }}
+                            </small>
+                        </div>
+                        <div class="grid w-full grid-cols-1 gap-2 mb-2 md:grid-cols-2">
+                            <div class="w-full">
+                                <label class="text-xs">Business type</label>
+                                <Dropdown @change="form.business_type === 'digital' && (form.address = 'Online'); 'business_type' in form.errors && form.clearErrors('business_type')" v-model="form.business_type" :class="(props?.errors?.business_type || form.errors.business_type) && 'p-invalid'" :options="[{name: 'Digital', value: 'digital'}, {name: 'Physical', value: 'physical'}]" optionLabel="name" optionValue="value" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
+                                <small v-if="props?.errors?.business_type || form.errors?.business_type" class="text-xs text-red-400">
+                                    {{ props?.errors?.business_type ?? form.errors?.business_type}}
+                                </small>
+                            </div>
+                            <div class="w-full">
+                                <label class="text-xs">Business category</label>
+                                <Dropdown @change="'category_id' in form.errors && form.clearErrors('category_id')" v-model="form.category_id" :class="(props?.errors?.category_id || form.errors?.category_id) && 'p-invalid'" :options="categories" optionLabel="category_name" optionValue="id" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
+                                <small v-if="props?.errors?.category_id || form.errors?.category_id" class="text-xs text-red-400">
+                                    {{ props?.errors?.category_id ?? form.errors?.category_id}}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="grid w-full grid-cols-1 gap-2 mb-4 md:grid-cols-2">
+                            <div class="w-full">
+                                <label class="text-xs">Business age</label>
+                                <InputNumber @input="'age' in form.errors && form.clearErrors('age')" v-model="form.age" :class="(props?.errors?.age || form.errors.age) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="expiry" :suffix="form.age > 1 ? ' years' : ' year'"/>
+                                <small v-if="props?.errors?.age || form.errors.age" class="text-xs text-red-400">
+                                    {{ props?.errors?.age ?? form.errors.age }}
+                                </small>
+                            </div>
+                            <div class="w-full">
+                                <label class="text-xs">Registration number</label>
+                                <InputText @input="'business_number' in form.errors && form.clearErrors('business_number')" :class="(props?.errors?.business_number || form.errors?.business_number) && 'p-invalid'" class="w-full" v-model="form.business_number" size="small"/>
+                                <small v-if="props?.errors?.business_number || form.errors?.business_number" class="text-xs text-red-400">
+                                    {{ props?.errors?.business_number ??  form.errors?.business_number }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="flex justify-end w-full">
+                            <button @click="validate" type="button" class="btn primary">Continue</button>
+                        </div>
+                    </section>
+                    <section v-show="currentTimeline === 1">
+                        <div class="w-full mb-2">
+                            <label class="text-xs">Description</label>
+                            <Textarea @input="'description' in form.errors && form.clearErrors('description')" v-model="form.description" :class="(props?.errors?.description || form.errors?.description) && 'p-invalid'" class="w-full" rows="2" autoResize/>
+                            <small v-if="props?.errors?.description || form.errors?.description" class="text-xs text-red-400">
+                                {{ props?.errors?.description ?? form.errors?.description }}
+                            </small>
+                        </div>
+                        <div class="w-full mb-2">
+                            <label class="text-xs">Address of business</label>
+                            <InputText @input="'address' in form.errors && form.clearErrors('address')" :class="(props?.errors?.address || form.errors?.address) && 'p-invalid'" class="w-full" v-model="form.address" size="small"/>
+                            <small v-if="props?.errors?.address || form.errors?.address" class="text-xs text-red-400">
+                                {{ props?.errors?.address ?? form.errors?.address }}
+                            </small>
+                        </div>
+                        <div class="w-full mb-2">
+                            <label class="text-xs">Property type</label>
+                            <Dropdown @change="'property_type' in form.errors && form.clearErrors('property_type')" v-model="form.property_type" :class="(props?.errors?.property_type || form.errors?.property_type) && 'p-invalid'" :options="['Rented office', 'Shop', 'Workspace', 'None']" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
+                            <small v-if="props?.errors?.property_type || form.errors?.property_type" class="text-xs text-red-400">
+                                {{ props?.errors?.property_type ?? form.errors?.property_type }}
+                            </small>
+                        </div>
+                        <div class="w-full mb-8">
+                            <label class="text-xs">Photos of business</label>
+                            <div class="w-full my-2 flex items-center gap-2 md:gap-3 overflow-auto scrollbar-hide">
+                                <label for="file" class="w-16 h-16 flex justify-center items-center rounded-lg border border-dashed shrink-0 cursor-pointer">
+                                    <i class='bx bx-plus text-xl text-neutral-600'></i>
+                                </label>
+                                <input class="hidden" id="file" type="file" @change="onFileChange($event); 'photos' in form.errors && form.clearErrors('photos')" multiple accept="image/png, image/jpeg"/>
+                                <draggable class="flex items-center gap-2 md:gap-3" tag="div" v-model="form.photos" item-key="name">
+                                    <template #item="{ element: image, index: key }">
+                                        <div
+                                            :style="`background-image: url(${createURL(image)});`"
+                                            class="w-16 h-16 relative rounded-lg bg-no-repeat bg-cover bg-center flex-shrink-0 group lg:cursor-grab bg-primary-100"
+                                            >
+                                            <div @click="deleteFile(key)"
+                                                class="w-6 h-6 flex lg:hidden items-center justify-center bg-black/50 text-white cursor-pointer rounded-full absolute right-2 top-2 lg:group-hover:flex"
+                                                >
+                                                <i class='bx bx-trash text-lg pointer-events-none'></i>
+                                            </div>
+                                            <div v-if="key === 0"
+                                                class="p-1 text-[10px] lg:text-xs bg-primary-400 text-white absolute bottom-0 left-0 rounded-tr-lg rounded-bl-lg"
+                                                >
+                                                Main
+                                            </div>
+                                            <div class="w-5 h-5 p-1 flex justify-center items-center text-[10px] lg:text-xs bg-black/50 text-white absolute bottom-1 right-1 rounded-full"
+                                                >
+                                                {{ key + 1 }}
+                                            </div>
+                                        </div>
+                                    </template>
+                                </draggable>
+                            </div>
+                            <p class="text-sm text-neutral-600 tracking-wide"><small>.jpg, .png, size limit per photo: 3MB, photos limit: 8</small></p>
+                            <!-- <InputText :class="props?.errors?.address && 'p-invalid'" class="w-full" v-model="form.address" size="small"/> -->
+                            <small v-if="props?.errors?.photos || form.errors?.photos" class="text-xs text-red-400">
+                                {{ props?.errors?.photos ?? form.errors?.photos }}
+                            </small>
+                        </div>
+                        <div class="flex justify-end w-full gap-2">
+                            <button @click="currentTimeline--" type="button" class="btn stroke">Back</button>
+                            <button @click="validate" type="button" class="btn primary">Continue</button>
+                        </div>
+                    </section>
+                    <section v-show="currentTimeline === 2">
+                        <div class="w-full mb-2">
+                            <label class="text-xs">Put business up for</label>
+                            <SelectButton @change="'transaction_type' in form.errors && form.clearErrors('transaction_type')" v-model="form.transaction_type" :class="(props?.errors?.transaction_type || form.errors?.transaction_type) && 'p-invalid'" :options="transaction_types" optionLabel="name" optionValue="value" />
+                            <small v-if="props?.errors?.transaction_type || form.errors?.transaction_type" class="text-xs text-red-400">
+                                {{ props?.errors?.transaction_type ?? form.errors?.transaction_type }}
+                            </small>
+                        </div>
+                        <div class="w-full mb-2">
+                            <label class="text-xs">Set a price</label>
+                            <InputNumber @input="'price' in form.errors && form.clearErrors('price')" v-model="form.price" :class="(props?.errors?.price || form.errors?.price) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="currency-ng" mode="currency" currency="NGN" locale="en-NG"/>
+                            <small v-if="props?.errors?.price || form.errors?.price" class="text-xs text-red-400">
+                                {{ props?.errors?.price ?? form.errors?.price }}
+                            </small>
+                        </div>
+                        <div class="w-full mb-2">
+                            <label class="text-xs">What is your monthly profit ?</label>
+                            <InputNumber @input="'profit' in form.errors && form.clearErrors('profit')" v-model="form.profit" :class="(props?.errors?.price || form.errors?.price) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="currency-ng" mode="currency" currency="NGN" locale="en-NG"/>
+                            <small v-if="props?.errors?.profit || form.errors?.profit" class="text-xs text-red-400">
+                                {{ props?.errors?.profit ?? form.errors?.profit }}
+                            </small>
+                        </div>
+                        <div class="w-full mb-8">
+                            <label class="text-xs">What is the margin ?</label>
+                            <InputNumber @input="'margin' in form.errors && form.clearErrors('margin')" v-model="form.margin" :class="(props?.errors?.margin || form.errors?.margin) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="2" suffix="%"/>
+                            <small v-if="props?.errors?.margin || form.errors?.margin" class="text-xs text-red-400">
+                                {{ props?.errors?.margin ?? form.errors?.margin }}
+                            </small>
+                        </div>
+                        <div class="flex justify-end w-full gap-2">
+                            <button @click="currentTimeline--" type="button" class="btn stroke">Back</button>
+                            <button :disabled="form.processing" type="button" @click="validate" class="btn primary">Submit</button>
+                        </div>
+                    </section>
+                </form>
+            </div>
+        </div>
+        <Footer/>
+    </section>
+</template>

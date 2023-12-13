@@ -22,9 +22,11 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->text('description');
             $table->string('transaction_type');
-            $table->string('state')->nullable();
-            $table->string('lga')->nullable();
+            $table->text('address')->nullable();
             $table->double('price');
+            $table->double('profit');
+            $table->double('margin');
+            $table->unsignedBigInteger('age');
             $table->unsignedBigInteger('views')->default(0);
             $table->enum('verification_status', ['verified', 'unverified'])
             ->default('unverified');

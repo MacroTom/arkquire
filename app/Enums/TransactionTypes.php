@@ -18,4 +18,14 @@ enum TransactionTypes: string
             static::Investment->value
         ];
     }
+
+    public static function toObject()
+    {
+        return [
+            ['name' => 'Sale', 'value' => static::Sale->value],
+            ['name' => 'Auction', 'value' => static::Auction->value],
+            ['name' => 'Lease', 'value' => static::Lease->value],
+            ['name' => 'Investment', 'value' => static::Investment->value]
+        ];
+    }
 }

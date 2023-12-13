@@ -54,7 +54,7 @@ const showMessage = () => {
             <img class="w-full" src="/images/logo.svg" alt="logo">
         </div>
 
-        <ul class="w-full bg-white/80 backdrop-blur-md md:backdrop-blur-none md:w-fit gap-x-8 flex items-center justify-around text-xs md:text-sm fixed bottom-0 left-0 z-30 py-4 px-3 md:static">
+        <ul class="w-full bg-white/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-none md:w-fit gap-x-8 flex items-center justify-around text-xs md:text-sm fixed bottom-0 left-0 z-30 py-4 px-3 md:static">
             <li>
                 <Link :class="$page.url === '/' ? 'border-black' : 'border-transparent text-neutral-400'" class="inline-block border-b-4 pb-2" href="/">Home</Link>
             </li>
