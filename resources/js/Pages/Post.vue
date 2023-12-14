@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, defineOptions, defineProps, ref } from 'vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import Navbar from '../Components/Navbar.vue';
 import Footer from '../Components/Footer.vue';
 import Timeliner from '../Components/Timeliner.vue';
@@ -28,7 +28,7 @@ const timelines = ref(
         { label: '01', description: 'Business information' },
         { label: '02', description: 'Tell us more about your business' },
         { label: '03', description: 'Financial information' },
-        // { description: 'Done' },
+        { description: 'Done' },
     ]
 );
 
@@ -88,9 +88,26 @@ const onFileChange = (e) => {
     let key;
     for(const file of files){
         key = removeFileExtension(file.name);
-        if((file.type === 'image/png' || file.type === 'image/jpeg') && file.size < 3145728 && form.photos.length <= 12){
+        if((file.type === 'image/png' || file.type === 'image/jpeg') && file.size < 3145728 && form.photos.length <= 8){
             form.photos.push(file);
         }
+    }
+}
+
+const showForm = () => {
+    if(form.hasErrors){
+        const keys = Object.keys(form.errors);
+        fields?.some(function(field, index){
+            // console.log(field, keys);
+            if(field?.includes(keys[0])){
+                currentTimeline.value = index;
+                toast.add(
+                    { severity: 'error', summary: 'Error', detail: 'Fields could not be validated!', life: 5000 }
+                );
+                return true;
+            }
+            return false;
+        });
     }
 }
 
@@ -98,19 +115,17 @@ const submit = () => {
     form.post('/postbusiness', {
         preserveScroll: true,
         onSuccess: (res) => {
-            console.log(res);
             toast.add(
                 { severity: 'success', summary: 'Success', detail: res.props.flash.message, life: 5000 }
             );
             form.reset();
+            currentTimeline.value = 3;
         },
         onError: (err) => {
-            err?.message ?
+            showForm();
+            err?.message &&
             toast.add(
-                { severity: 'error', summary: 'Error', detail: err?.message, life: 5000 }
-            ) :
-            toast.add(
-                { severity: 'error', summary: 'Error', detail: 'Please complete the form!', life: 5000 }
+                { severity: 'error', summary: 'Error', detail: err?.message, life: 20000 }
             );
         }
     })
@@ -191,40 +206,40 @@ const validate = () => {
                     <section v-show="currentTimeline === 0">
                         <div class="w-full mb-2">
                             <label class="text-xs">Business name</label>
-                            <InputText @input="'business_name' in form.errors && form.clearErrors('business_name')" :class="(props?.errors?.business_name || form.errors?.business_name) && 'p-invalid'" class="w-full" v-model="form.business_name" size="small"/>
-                            <small v-if="props?.errors?.business_name || form.errors?.business_name" class="text-xs text-red-400">
-                                {{ props?.errors?.business_name ?? form.errors?.business_name }}
+                            <InputText @input="'business_name' in form.errors && form.clearErrors('business_name')" :class="(form.errors?.business_name) && 'p-invalid'" class="w-full" v-model="form.business_name" size="small"/>
+                            <small v-if="form.errors?.business_name" class="text-xs text-red-400">
+                                {{ form.errors?.business_name }}
                             </small>
                         </div>
                         <div class="grid w-full grid-cols-1 gap-2 mb-2 md:grid-cols-2">
                             <div class="w-full">
                                 <label class="text-xs">Business type</label>
-                                <Dropdown @change="form.business_type === 'digital' && (form.address = 'Online'); 'business_type' in form.errors && form.clearErrors('business_type')" v-model="form.business_type" :class="(props?.errors?.business_type || form.errors.business_type) && 'p-invalid'" :options="[{name: 'Digital', value: 'digital'}, {name: 'Physical', value: 'physical'}]" optionLabel="name" optionValue="value" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
-                                <small v-if="props?.errors?.business_type || form.errors?.business_type" class="text-xs text-red-400">
-                                    {{ props?.errors?.business_type ?? form.errors?.business_type}}
+                                <Dropdown @change="form.business_type === 'digital' && (form.address = 'Online'); 'business_type' in form.errors && form.clearErrors('business_type')" v-model="form.business_type" :class="(form.errors.business_type) && 'p-invalid'" :options="[{name: 'Digital', value: 'digital'}, {name: 'Physical', value: 'physical'}]" optionLabel="name" optionValue="value" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
+                                <small v-if="form.errors?.business_type" class="text-xs text-red-400">
+                                    {{ form.errors?.business_type}}
                                 </small>
                             </div>
                             <div class="w-full">
                                 <label class="text-xs">Business category</label>
-                                <Dropdown @change="'category_id' in form.errors && form.clearErrors('category_id')" v-model="form.category_id" :class="(props?.errors?.category_id || form.errors?.category_id) && 'p-invalid'" :options="categories" optionLabel="category_name" optionValue="id" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
-                                <small v-if="props?.errors?.category_id || form.errors?.category_id" class="text-xs text-red-400">
-                                    {{ props?.errors?.category_id ?? form.errors?.category_id}}
+                                <Dropdown @change="'category_id' in form.errors && form.clearErrors('category_id')" v-model="form.category_id" :class="(form.errors?.category_id) && 'p-invalid'" :options="categories" optionLabel="category_name" optionValue="id" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
+                                <small v-if="form.errors?.category_id" class="text-xs text-red-400">
+                                    {{ form.errors?.category_id}}
                                 </small>
                             </div>
                         </div>
                         <div class="grid w-full grid-cols-1 gap-2 mb-4 md:grid-cols-2">
                             <div class="w-full">
                                 <label class="text-xs">Business age</label>
-                                <InputNumber @input="'age' in form.errors && form.clearErrors('age')" v-model="form.age" :class="(props?.errors?.age || form.errors.age) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="expiry" :suffix="form.age > 1 ? ' years' : ' year'"/>
-                                <small v-if="props?.errors?.age || form.errors.age" class="text-xs text-red-400">
-                                    {{ props?.errors?.age ?? form.errors.age }}
+                                <InputNumber :min="1" @input="'age' in form.errors && form.clearErrors('age')" v-model="form.age" :class="(form.errors.age) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="expiry" :suffix="form.age > 1 ? ' years' : ' year'"/>
+                                <small v-if="form.errors.age" class="text-xs text-red-400">
+                                    {{ form.errors.age }}
                                 </small>
                             </div>
                             <div class="w-full">
                                 <label class="text-xs">Registration number</label>
-                                <InputText @input="'business_number' in form.errors && form.clearErrors('business_number')" :class="(props?.errors?.business_number || form.errors?.business_number) && 'p-invalid'" class="w-full" v-model="form.business_number" size="small"/>
-                                <small v-if="props?.errors?.business_number || form.errors?.business_number" class="text-xs text-red-400">
-                                    {{ props?.errors?.business_number ??  form.errors?.business_number }}
+                                <InputText @input="'business_number' in form.errors && form.clearErrors('business_number')" :class="(form.errors?.business_number) && 'p-invalid'" class="w-full" v-model="form.business_number" size="small"/>
+                                <small v-if="form.errors?.business_number" class="text-xs text-red-400">
+                                    {{ form.errors?.business_number }}
                                 </small>
                             </div>
                         </div>
@@ -235,23 +250,23 @@ const validate = () => {
                     <section v-show="currentTimeline === 1">
                         <div class="w-full mb-2">
                             <label class="text-xs">Description</label>
-                            <Textarea @input="'description' in form.errors && form.clearErrors('description')" v-model="form.description" :class="(props?.errors?.description || form.errors?.description) && 'p-invalid'" class="w-full" rows="2" autoResize/>
-                            <small v-if="props?.errors?.description || form.errors?.description" class="text-xs text-red-400">
-                                {{ props?.errors?.description ?? form.errors?.description }}
+                            <Textarea @input="'description' in form.errors && form.clearErrors('description')" v-model="form.description" :class="(form.errors?.description) && 'p-invalid'" class="w-full" rows="2" autoResize/>
+                            <small v-if="form.errors?.description" class="text-xs text-red-400">
+                                {{ form.errors?.description }}
                             </small>
                         </div>
                         <div class="w-full mb-2">
                             <label class="text-xs">Address of business</label>
-                            <InputText @input="'address' in form.errors && form.clearErrors('address')" :class="(props?.errors?.address || form.errors?.address) && 'p-invalid'" class="w-full" v-model="form.address" size="small"/>
-                            <small v-if="props?.errors?.address || form.errors?.address" class="text-xs text-red-400">
-                                {{ props?.errors?.address ?? form.errors?.address }}
+                            <InputText @input="'address' in form.errors && form.clearErrors('address')" :class="(form.errors?.address) && 'p-invalid'" class="w-full" v-model="form.address" size="small"/>
+                            <small v-if="form.errors?.address" class="text-xs text-red-400">
+                                {{ form.errors?.address }}
                             </small>
                         </div>
                         <div class="w-full mb-2">
                             <label class="text-xs">Property type</label>
-                            <Dropdown @change="'property_type' in form.errors && form.clearErrors('property_type')" v-model="form.property_type" :class="(props?.errors?.property_type || form.errors?.property_type) && 'p-invalid'" :options="['Rented office', 'Shop', 'Workspace', 'None']" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
-                            <small v-if="props?.errors?.property_type || form.errors?.property_type" class="text-xs text-red-400">
-                                {{ props?.errors?.property_type ?? form.errors?.property_type }}
+                            <Dropdown @change="'property_type' in form.errors && form.clearErrors('property_type')" v-model="form.property_type" :class="(form.errors?.property_type) && 'p-invalid'" :options="['Rented office', 'Shop', 'Workspace', 'None']" placeholder="" class="w-full md:w-14rem p-inputtext-sm" />
+                            <small v-if="form.errors?.property_type" class="text-xs text-red-400">
+                                {{ form.errors?.property_type }}
                             </small>
                         </div>
                         <div class="w-full mb-8">
@@ -287,8 +302,8 @@ const validate = () => {
                             </div>
                             <p class="text-sm text-neutral-600 tracking-wide"><small>.jpg, .png, size limit per photo: 3MB, photos limit: 8</small></p>
                             <!-- <InputText :class="props?.errors?.address && 'p-invalid'" class="w-full" v-model="form.address" size="small"/> -->
-                            <small v-if="props?.errors?.photos || form.errors?.photos" class="text-xs text-red-400">
-                                {{ props?.errors?.photos ?? form.errors?.photos }}
+                            <small v-if="form.errors?.photos" class="text-xs text-red-400">
+                                {{ form.errors?.photos }}
                             </small>
                         </div>
                         <div class="flex justify-end w-full gap-2">
@@ -299,35 +314,49 @@ const validate = () => {
                     <section v-show="currentTimeline === 2">
                         <div class="w-full mb-2">
                             <label class="text-xs">Put business up for</label>
-                            <SelectButton @change="'transaction_type' in form.errors && form.clearErrors('transaction_type')" v-model="form.transaction_type" :class="(props?.errors?.transaction_type || form.errors?.transaction_type) && 'p-invalid'" :options="transaction_types" optionLabel="name" optionValue="value" />
-                            <small v-if="props?.errors?.transaction_type || form.errors?.transaction_type" class="text-xs text-red-400">
-                                {{ props?.errors?.transaction_type ?? form.errors?.transaction_type }}
+                            <SelectButton @change="'transaction_type' in form.errors && form.clearErrors('transaction_type')" v-model="form.transaction_type" :class="(form.errors?.transaction_type) && 'p-invalid'" :options="transaction_types" optionLabel="name" optionValue="value" />
+                            <small v-if="form.errors?.transaction_type" class="text-xs text-red-400">
+                                {{ form.errors?.transaction_type }}
                             </small>
                         </div>
                         <div class="w-full mb-2">
                             <label class="text-xs">Set a price</label>
-                            <InputNumber @input="'price' in form.errors && form.clearErrors('price')" v-model="form.price" :class="(props?.errors?.price || form.errors?.price) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="currency-ng" mode="currency" currency="NGN" locale="en-NG"/>
-                            <small v-if="props?.errors?.price || form.errors?.price" class="text-xs text-red-400">
-                                {{ props?.errors?.price ?? form.errors?.price }}
+                            <InputNumber @input="'price' in form.errors && form.clearErrors('price')" v-model="form.price" :class="(form.errors?.price) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="currency-ng" mode="currency" currency="NGN" locale="en-NG"/>
+                            <small v-if="form.errors?.price" class="text-xs text-red-400">
+                                {{ form.errors?.price }}
                             </small>
                         </div>
                         <div class="w-full mb-2">
                             <label class="text-xs">What is your monthly profit ?</label>
-                            <InputNumber @input="'profit' in form.errors && form.clearErrors('profit')" v-model="form.profit" :class="(props?.errors?.price || form.errors?.price) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="currency-ng" mode="currency" currency="NGN" locale="en-NG"/>
-                            <small v-if="props?.errors?.profit || form.errors?.profit" class="text-xs text-red-400">
-                                {{ props?.errors?.profit ?? form.errors?.profit }}
+                            <InputNumber @input="'profit' in form.errors && form.clearErrors('profit')" v-model="form.profit" :class="(form.errors?.price) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="currency-ng" mode="currency" currency="NGN" locale="en-NG"/>
+                            <small v-if="form.errors?.profit" class="text-xs text-red-400">
+                                {{ form.errors?.profit }}
                             </small>
                         </div>
                         <div class="w-full mb-8">
                             <label class="text-xs">What is the margin ?</label>
-                            <InputNumber @input="'margin' in form.errors && form.clearErrors('margin')" v-model="form.margin" :class="(props?.errors?.margin || form.errors?.margin) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="2" suffix="%"/>
-                            <small v-if="props?.errors?.margin || form.errors?.margin" class="text-xs text-red-400">
-                                {{ props?.errors?.margin ?? form.errors?.margin }}
+                            <InputNumber @input="'margin' in form.errors && form.clearErrors('margin')" v-model="form.margin" :class="(form.errors?.margin) && 'p-invalid'" class="w-full p-inputtext-sm" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="2" suffix="%"/>
+                            <small v-if="form.errors?.margin" class="text-xs text-red-400">
+                                {{ form.errors?.margin }}
                             </small>
                         </div>
                         <div class="flex justify-end w-full gap-2">
                             <button @click="currentTimeline--" type="button" class="btn stroke">Back</button>
                             <button :disabled="form.processing" type="button" @click="validate" class="btn primary">Submit</button>
+                        </div>
+                    </section>
+                    <section v-show="currentTimeline > 2">
+                        <div class="w-full min-h-[15rem] flex flex-col gap-y-4 items-center justify-center">
+                            <div class="w-20">
+                                <img class="w-full object-contain" src="/images/tick.png" alt="image"/>
+                            </div>
+                            <p class="text-neutral-700 text-center font-medium">
+                                Your business has been submitted successfully, but under review. We will notify you once it is approved.
+                            </p>
+                            <div class="w-full flex gap-3 items-center justify-center">
+                                <Link href="/" class="btn primary">Go to home</Link>
+                                <button @click="currentTimeline = 0" type="button" class="btn stroke">Add another</button>
+                            </div>
                         </div>
                     </section>
                 </form>

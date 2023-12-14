@@ -36,7 +36,7 @@ const breakpoints = {
                 </small>
             </div>
             <Link href="/auctions" class="inline-flex items-center gap-2 text-sm md:text-base text-primary-500 hover:text-primary-600">
-                <span class="text-sm">View all</span>
+                <span class="text-xs">View all</span>
                 <span class="relative transition-all duration-300 ease-in-out group-hover:translate-x-3">→</span>
             </Link>
         </header>
@@ -52,10 +52,6 @@ const breakpoints = {
                         <p class="text-sm font-semibold group-hover:text-primary-400 flex items-center justify-between">
                             <span>Lorem ipsum dolor</span>
                             <span class="font-normal text-xs text-primary-400 shrink-0">3 bids</span>
-                        </p>
-                        <p class="text-xs flex items-center">
-                            <i class="bx bx-map"></i>
-                            <span>Asaba, Delta</span>
                         </p>
                         <p class="text-neutral-700 flex items-center justify-between">
                             <span class="text-xs">Starting bid</span>

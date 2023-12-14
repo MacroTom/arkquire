@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('businesses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()
+            ->onDelete('cascade');
             $table->string('business_name');
             $table->string('business_number');
             $table->enum('business_type', ['digital', 'physical'])

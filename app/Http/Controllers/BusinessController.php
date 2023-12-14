@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\TransactionTypes;
 use Inertia\Inertia;
 use App\Models\Business;
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Enums\TransactionTypes;
+use Illuminate\Support\Facades\Storage;
 
 class BusinessController extends Controller
 {
@@ -28,24 +30,31 @@ class BusinessController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'business_name' => 'required',
-            'business_number' => 'required',
-            'business_type' => 'required',
-            'property_type' => 'required',
-            'category_id' => 'required',
-            'description' => 'required',
-            'transaction_type' => 'required',
-            'address' => 'nullable',
-            'price' => 'required',
-            'profit' => 'required',
-            'margin' => 'required',
-            'age' => 'required',
-            'photos' => 'required',
-            'properties' => 'nullable'
-        ]);
+        $request->validate(
+            [
+                'business_name' => 'required|unique:businesses,business_name',
+                'business_type' => 'required',
+                'category_id' => 'required',
+                'age' => 'required',
+                'business_number' => 'required|unique:businesses,business_number',
+                'description' => 'required',
+                'address' => 'nullable',
+                'property_type' => 'required',
+                'photos' => 'required',
+                'transaction_type' => 'required',
+                'price' => 'required',
+                'profit' => 'required',
+                'margin' => 'required',
+                'properties' => 'nullable'
+            ],
+            [
+                'business_number.unique' => 'Reg. number has been used!'
+            ]
+        );
 
-        Business::create($request->only(
+        $user = $request->user();
+
+        $business = $user->businesses()->create($request->only(
             [
                 'business_name',
                 'business_number',
@@ -61,6 +70,24 @@ class BusinessController extends Controller
                 'age',
             ]) + ['listing_id' => generateUID()]
         );
+
+
+        foreach ($request->photos as $file) {
+            $extension = $file->extension();
+            $filename = Str::random(50).".$extension";
+
+            // File Storage
+            $path = $file->storePubliclyAs(
+                'public/businesses', $filename
+            );
+
+            $url = Storage::url($path);
+
+            $business->images()->create([
+                'url' => $url,
+                'path' => $path,
+            ]);
+        }
 
         return redirect()->back()->with('message', 'Business has been created and under review, you will been notified via email once approved!');
     }

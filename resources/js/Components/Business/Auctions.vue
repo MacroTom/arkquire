@@ -24,10 +24,6 @@ import { Link } from '@inertiajs/vue3';
                         <span>Lorem ipsum dolor</span>
                         <span class="font-normal text-xs text-primary-400 shrink-0">3 bids</span>
                     </p>
-                    <p class="text-xs flex items-center">
-                        <i class="bx bx-map"></i>
-                        <span>Asaba, Delta</span>
-                    </p>
                     <p class="text-neutral-700 flex items-center justify-between">
                         <span class="text-xs">Starting bid</span>
                         <span class="text-sm font-semibold">₦750,000,000</span>

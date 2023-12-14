@@ -26,6 +26,17 @@ export const designStyles = {
             class: ['bg-primary-500/80 text-white']
         }
     },
+    toast: {
+        summary: {
+            class: ['text-sm']
+        },
+        detail: {
+            class: ['text-sm']
+        },
+        icon: {
+            class: ['w-7 h-7']
+        }
+    },
     tooltip:{
         text: {
             class: ['text-xs p-2']

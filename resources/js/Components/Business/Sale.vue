@@ -24,10 +24,6 @@ import { Link } from '@inertiajs/vue3';
                 </div>
                 <div class="w-full rounded-b-lg border-x border-b p-3">
                     <p class="text-neutral-700 font-medium text-sm group-hover:text-primary-400">Business name</p>
-                    <p class="text-xs flex items-center mb-1">
-                        <i class="bx bx-map"></i>
-                        <span>Asaba, Delta</span>
-                    </p>
                     <div class="flex gap-x-4 justify-between mb-2">
                         <div>
                             <small class="text-neutral-600 text-[0.7rem]">Category</small>
