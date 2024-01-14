@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, defineOptions } from 'vue';
+import { onMounted, defineOptions, defineProps } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import Navbar from '../Components/Navbar.vue';
 import Footer from '../Components/Footer.vue';
@@ -10,6 +10,15 @@ import Sale from '../Components/Business/Sale.vue';
 
 import Services from '../Layouts/Services.vue';
 defineOptions({ layout: Services });
+
+const props = defineProps({
+    auction: Object,
+    sale: Object,
+    lease: Object,
+    investment: Object
+});
+
+// console.log(props);
 </script>
 
 <template>
@@ -19,8 +28,8 @@ defineOptions({ layout: Services });
     <section class="w-full">
         <Navbar/>
         <Header/>
-        <Auction/>
-        <Sale/>
+        <Auction :businesses="auction"/>
+        <Sale :businesses="sale"/>
         <Categories/>
         <Footer/>
     </section>

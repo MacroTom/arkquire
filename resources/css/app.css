@@ -55,4 +55,22 @@ body{
     .stroke{
         @apply py-2.5 font-medium border border-primary-500 text-primary-400 disabled:cursor-not-allowed disabled:bg-neutral-600 disabled:text-neutral-500 hover:bg-primary-500/80 hover:text-white transition-all duration-75 ease-in active:scale-95
     }
+    .tbl{
+        @apply w-full
+    }
+    .tbl thead{
+        @apply border-b
+    }
+    .tbl thead th{
+        @apply p-3 text-left text-sm font-medium text-slate-600
+    }
+    .tbl tbody tr{
+        @apply odd:bg-slate-100
+    }
+    .tbl tbody td{
+        @apply p-3 text-sm md:text-xs text-slate-600 text-left whitespace-nowrap font-body
+    }
+    .tbl tbody td span.badge{
+        @apply px-2 py-1 rounded-lg text-xs text-white tracking-wide
+    }
 }

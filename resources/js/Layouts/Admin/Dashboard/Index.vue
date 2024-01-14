@@ -13,7 +13,7 @@ import Toast from 'primevue/toast';
             <!-- Topbar -->
             <Topbar/>
             <!-- Main content -->
-            <main class="w-full h-full max-h-[calc(100%-4rem)] lg:max-h-[calc(100%-5rem)] overflow-auto trans px-4 pt-4 md:px-8 lg:px-16">
+            <main class="w-full h-full max-h-[calc(100%-4rem)] lg:max-h-[calc(100%-5rem)] overflow-auto trans px-4 pt-4 md:px-8 lg:px-16 lg:pt-12">
                 <slot/>
             </main>
         </div>

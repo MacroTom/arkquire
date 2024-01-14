@@ -20,9 +20,7 @@ Route::get('/', function () {
     return Inertia::render('Home');
 })->name('home');
 
-Route::get('/businesses', function () {
-    return Inertia::render('Businesses');
-});
+Route::get('/businesses', [BusinessController::class, 'index']);
 
 Route::get('/auctions', function () {
     return Inertia::render('Auctions');
@@ -35,7 +33,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/business/{id}', [BusinessController::class, 'business']);
 
 Route::middleware('auth')->group(function(){
-    Route::get('/postbusiness', [BusinessController::class, 'index']);
+    Route::get('/postbusiness', [BusinessController::class, 'show']);
     Route::post('/postbusiness', [BusinessController::class, 'store']);
 
     Route::post('/logout', [AuthController::class, 'logout']);

@@ -8,6 +8,11 @@ export const designStyles = {
             class: ['rounded-full']
         }
     },
+    calendar: {
+        input: {
+            class: ['rounded-full text-sm']
+        }
+    },
     dropdown: {
         root: {
             class: ['rounded-full']

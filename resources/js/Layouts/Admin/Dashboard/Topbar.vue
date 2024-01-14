@@ -94,7 +94,7 @@ const toggle = (event) => {
         <!-- Notification buttons -->
         <div class="flex items-center gap-4">
             <button v-ripple class="flex items-center gap-2 p-2 rounded-lg outline-none p-ripple hover:bg-primary-100">
-                <i v-badge class="text-2xl bx bx-bell p-overlay-badge"></i>
+                <i v-badge class="text-2xl bx bx-bell bx-tada p-overlay-badge"></i>
             </button>
 
             <button v-ripple class="flex items-center gap-2 p-1 rounded-lg outline-none p-ripple hover:bg-primary-100 md:p-2" @click="toggle">
