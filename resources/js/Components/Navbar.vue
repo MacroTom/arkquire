@@ -59,7 +59,7 @@ const showMessage = () => {
                 <Link :class="$page.url === '/' ? 'border-black' : 'border-transparent text-neutral-400'" class="inline-block border-b-4 pb-2" href="/">Home</Link>
             </li>
             <li>
-                <Link :class="$page.url === '/businesses' || $page.url === '/auctions' ? 'border-black' : 'border-transparent text-neutral-400'" class="inline-block border-b-4 pb-2" href="/businesses">Businesses</Link>
+                <Link :class="$page.url.startsWith('/businesses') ? 'border-black' : 'border-transparent text-neutral-400'" class="inline-block border-b-4 pb-2" href="/businesses">Businesses</Link>
             </li>
             <li>
                 <Link :class="$page.url === '/about' ? 'border-black' : 'border-transparent text-neutral-400'" class="inline-block border-b-4 pb-2" href="/about">About</Link>
